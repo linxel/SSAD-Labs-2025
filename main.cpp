@@ -1,106 +1,123 @@
 #include <iostream>
-#include <string>
-
-class Animal {
+#include <vector>
+class Animal
+{
 protected:
     std::string name;
     int age;
 
 public:
-    Animal(const std::string& name, int age) : name(name), age(age) {}
-    virtual void makeSound() const = 0;
-    std::string getName() const {
-        return name;
+    Animal(const std::string &name, int age)
+        : name(name), age(age)
+    {}
+    virtual void makeSound() const
+    {
+        std::cout << "Animal sound" << std::endl;
     }
-    int getAge() const {
-        return age;
-    }
-    virtual ~Animal() {}
+    virtual ~Animal() = default;
 };
-
-class LandAnimal : public Animal {
+class LandAnimal: virtual public Animal
+{
 public:
-    LandAnimal(const std::string& name, int age) : Animal(name, age) {}
-    void walk() const {
+    LandAnimal(const std::string &name, int age)
+        : Animal(name, age)
+    {}
+    virtual void walk() const
+    {
         std::cout << name << " is walking on land." << std::endl;
     }
-    void makeSound() const override {
-        std::cout << "Land animal " << name << " makes a land sound!" << std::endl;
+    void makeSound() const override
+    {
+        std::cout << name << " makes a land animal sound." << std::endl;
     }
 };
-
-class WaterAnimal : public Animal {
+class WaterAnimal: virtual public Animal
+{
 public:
-    WaterAnimal(const std::string& name, int age) : Animal(name, age) {}
-    void swim() const {
+    WaterAnimal(const std::string &name, int age)
+        : Animal(name, age)
+    {}
+    virtual void swim() const
+    {
         std::cout << name << " is swimming in water." << std::endl;
     }
-    void makeSound() const override {
-        std::cout << "Water animal " << name << " makes a water sound!" << std::endl;
+
+    void makeSound() const override
+    {
+        std::cout << name << " makes a water animal sound." << std::endl;
     }
 };
-
-class Cow : public LandAnimal {
+class Lion: public LandAnimal
+{
 public:
-    Cow(const std::string& name, int age) : LandAnimal(name, age) {}
-    void makeSound() const override {
-        std::cout << "Cow " << name << " says: mooooo" << std::endl;
+    Lion(const std::string &name, int age)
+        : Animal(name, age), LandAnimal(name, age)
+    {}
+
+    void walk() const override
+    {
+        std::cout << name << " the lion is walking majestically." << std::endl;
+    }
+
+    void makeSound() const override
+    {
+        std::cout << name << " says rrrrrr!" << std::endl;
     }
 };
-
-class Cat : public LandAnimal {
+class Dolphin: public WaterAnimal
+{
 public:
-    Cat(const std::string& name, int age) : LandAnimal(name, age) {}
-    void makeSound() const override {
-        std::cout << "Cat " << name << " says: meow" << std::endl;
+    Dolphin(const std::string &name, int age)
+        : Animal(name, age), WaterAnimal(name, age)
+    {}
+    void swim() const override
+    {
+        std::cout << name << " the dolphin is swimming good." << std::endl;
+    }
+    void makeSound() const override
+    {
+        std::cout << name << "says ... idk " << std::endl;
     }
 };
 
-class Dog : public LandAnimal {
+
+class Frog: public LandAnimal, public WaterAnimal
+{
 public:
-    Dog(const std::string& name, int age) : LandAnimal(name, age) {}
-    void makeSound() const override {
-        std::cout << "Dog " << name << " says: woof" << std::endl;
+    Frog(const std::string &name, int age)
+        : Animal(name, age), LandAnimal(name, age), WaterAnimal(name, age)
+    {}
+    void makeSound() const override
+    {
+        std::cout << name << " the frog croaks!" << std::endl;
+    }
+    void walk() const override
+    {
+        std::cout << name << " the frog is hopping on land." << std::endl;
+    }
+    void swim() const override
+    {
+        std::cout << name << " the frog is swimming in water." << std::endl;
     }
 };
-
-class Dolphin : public WaterAnimal {
-public:
-    Dolphin(const std::string& name, int age) : WaterAnimal(name, age) {}
-    void makeSound() const override {
-        std::cout << "Dolphin " << name << " says: idk what dolphin says" << std::endl;
+int main()
+{
+    std::vector<Animal *> animals;
+    Lion lion("lion", 5);
+    Dolphin dolphin("dolphin", 10);
+    Frog frog("frog", 2);
+    animals.push_back(&lion);
+    animals.push_back(&dolphin);
+    animals.push_back(&frog);
+    for (const auto &animal: animals) {
+        animal->makeSound();
+        if (auto landAnimal = dynamic_cast<LandAnimal *>(animal)) {
+            landAnimal->walk();
+        }
+        if (auto waterAnimal = dynamic_cast<WaterAnimal *>(animal)) {
+            waterAnimal->swim();
+        }
     }
-};
-
-class Crocodile : public WaterAnimal {
-public:
-    Crocodile(const std::string& name, int age) : WaterAnimal(name, age) {}
-    void makeSound() const override {
-        std::cout << "Crocodile " << name << " says: shhhh am am" << std::endl;
-    }
-};
-
-int main() {
-    Cow cow("cow", 5);
-    Cat cat("cat", 10);
-    Dog dog("dog", 3);
-    Dolphin dolphin("dolphin", 7);
-    Crocodile crocodile("crocodile", 12);
-
-    cow.makeSound();
-    cow.walk();
-
-    cat.makeSound();
-    cat.walk();
-
-    dog.makeSound();
-    dog.walk();
-
-    dolphin.makeSound();
-    dolphin.swim();
-
-    crocodile.makeSound();
-    crocodile.swim();
 
     return 0;
 }
