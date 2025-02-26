@@ -1,0 +1,36 @@
+#include <iostream>
+#include <cstring>
+
+template <typename T>
+class Wrapper {
+private:
+    T value;
+
+public:
+    Wrapper(T val) : value(val) {}
+
+    T getValue() const {
+        return value;
+    }
+};
+
+template <>
+class Wrapper<char*> {
+private:
+    char* value;
+
+public:
+    Wrapper(char* val) : value(val) {}
+    size_t getValue() const {
+        return std::strlen(value);
+    }
+};
+
+int main() {
+    Wrapper<int> intWrapper(42);
+    std::cout << "Wrapped int " << intWrapper.getValue() << std::endl;
+    Wrapper<char*> charWrapper("aaaaa");
+    std::cout << "Length: " << charWrapper.getValue() << std::endl;
+
+    return 0;
+}
