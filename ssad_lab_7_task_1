@@ -1,0 +1,112 @@
+#include <iostream>
+#include <vector>
+#include <stdexcept>
+
+template <typename T>
+class CircularBuffer {
+public:
+    CircularBuffer(size_t capacity) : capacity_(capacity), size_(0), head_(0), tail_(0) {
+        buffer_.resize(capacity);
+    }
+
+    void push(const T& value) {
+        if (size_ == capacity_) {
+            buffer_[tail_] = value;
+            tail_ = (tail_ + 1) % capacity_;
+        } else {
+            buffer_[head_] = value;
+            head_ = (head_ + 1) % capacity_;
+            if (size_ == capacity_) {
+                tail_ = (tail_ + 1) % capacity_;
+            }
+            ++size_;
+        }
+    }
+
+    T pop() {
+        if (size_ == 0) {
+            throw std::out_of_range("Circular buffer is empty");
+        }
+        T value = buffer_[tail_];
+        tail_ = (tail_ + 1) % capacity_;
+        --size_;
+        return value;
+    }
+
+    bool empty() const {
+        return size_ == 0;
+    }
+
+    size_t size() const {
+        return size_;
+    }
+
+    class iterator {
+    public:
+        iterator(CircularBuffer& cb, size_t index) : cb_(cb), index_(index) {}
+
+        iterator& operator++() {
+            index_ = (index_ + 1) % cb_.capacity_;
+            return *this;
+        }
+
+        T& operator*() {
+            return cb_.buffer_[index_];
+        }
+
+        bool operator!=(const iterator& other) const {
+            return index_ != other.index_;
+        }
+
+    private:
+        CircularBuffer& cb_;
+        size_t index_;
+    };
+
+    iterator begin() {
+        return iterator(*this, tail_);
+    }
+
+    iterator end() {
+        return iterator(*this, head_);
+    }
+
+private:
+    std::vector<T> buffer_;
+    size_t capacity_;
+    size_t size_;
+    size_t head_;
+    size_t tail_;
+};
+
+int main() {
+    CircularBuffer<int> cb(5);
+
+    cb.push(1);
+    cb.push(2);
+    cb.push(3);
+    cb.push(4);
+    cb.push(5);
+
+    std::cout << "Buffer size: " << cb.size() << std::endl;
+
+    for (auto it = cb.begin(); it != cb.end(); ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "Pop: " << cb.pop() << std::endl;
+    std::cout << "Pop: " << cb.pop() << std::endl;
+
+    cb.push(6);
+    cb.push(7);
+
+    std::cout << "Buffer size: " << cb.size() << std::endl;
+
+    for (auto it = cb.begin(); it != cb.end(); ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
+
+    return 0;
+}
