@@ -1,0 +1,89 @@
+// Strategy Pattern Implementation
+class Enemy {
+    private String name;
+    private int strength;
+
+    public Enemy(String name, int strength) {
+        this.name = name;
+        this.strength = strength;
+    }
+
+    public void takeDamage(int damage) {
+        strength -= damage;
+        if (strength < 0) strength = 0;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getStrength() {
+        return strength;
+    }
+}
+
+// Attack Strategy interface
+interface AttackStrategy {
+    void attack(Enemy enemy);
+}
+
+// Concrete strategies
+class MageAttack implements AttackStrategy {
+    @Override
+    public void attack(Enemy enemy) {
+        System.out.println("Mage attack!");
+        enemy.takeDamage(10);
+        System.out.println(enemy.getName() + " STRENGTH LEVEL IS: " + enemy.getStrength());
+    }
+}
+
+class RogueAttack implements AttackStrategy {
+    @Override
+    public void attack(Enemy enemy) {
+        System.out.println("Rogue attack!");
+        enemy.takeDamage(15);
+        System.out.println(enemy.getName() + " STRENGTH LEVEL IS: " + enemy.getStrength());
+    }
+}
+
+class WarriorAttack implements AttackStrategy {
+    @Override
+    public void attack(Enemy enemy) {
+        System.out.println("Warrior attack!");
+        enemy.takeDamage(25);
+        System.out.println(enemy.getName() + " STRENGTH LEVEL IS: " + enemy.getStrength());
+    }
+}
+
+// Character class using strategy
+class Character {
+    private AttackStrategy attackStrategy;
+
+    public void setAttackStrategy(AttackStrategy attackStrategy) {
+        this.attackStrategy = attackStrategy;
+    }
+
+    public void attack(Enemy enemy) {
+        attackStrategy.attack(enemy);
+    }
+}
+
+// Main class
+public class Main {
+    public static void main(String[] args) {
+        Character warrior = new Character();
+        Character mage = new Character();
+        Character rogue = new Character();
+
+        warrior.setAttackStrategy(new WarriorAttack());
+        mage.setAttackStrategy(new MageAttack());
+        rogue.setAttackStrategy(new RogueAttack());
+
+        Enemy blackKiller = new Enemy("BLACK KILLER", 100);
+        Enemy brownBiter = new Enemy("BROWN BITER", 25);
+
+        warrior.attack(blackKiller);
+        mage.attack(brownBiter);
+        rogue.attack(blackKiller);
+    }
+}
