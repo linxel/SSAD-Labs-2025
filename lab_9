@@ -1,0 +1,129 @@
+// Part 1: Singleton Logger
+class Logger {
+    private static Logger instance;
+
+    private Logger() {}
+
+    public static Logger getInstance() {
+        if (instance == null) {
+            instance = new Logger();
+        }
+        return instance;
+    }
+
+    public void log(String message) {
+        System.out.println("Log: " + message);
+    }
+}
+
+// Part 2: State Pattern - Document States
+abstract class DocumentState {
+    public abstract void handleInput(String input);
+}
+
+class DraftState extends DocumentState {
+    @Override
+    public void handleInput(String input) {
+        Logger.getInstance().log("Draft state handling input: " + input);
+    }
+}
+
+class ReviewState extends DocumentState {
+    @Override
+    public void handleInput(String input) {
+        Logger.getInstance().log("Review state handling input: " + input);
+    }
+}
+
+class FinalState extends DocumentState {
+    @Override
+    public void handleInput(String input) {
+        Logger.getInstance().log("Final state, no input allowed");
+    }
+}
+
+// Part 3: Prototype Pattern - Document Cloning
+abstract class DocumentPrototype {
+    public abstract DocumentPrototype clone();
+    public abstract void print();
+}
+
+class ReportType extends DocumentPrototype {
+    private String content;
+
+    public ReportType(String content) {
+        this.content = content;
+    }
+
+    @Override
+    public DocumentPrototype clone() {
+        Logger.getInstance().log("Cloning ReportType");
+        return new ReportType(this.content);
+    }
+
+    @Override
+    public void print() {
+        System.out.println("Report Content: " + content);
+    }
+}
+
+class InvoiceType extends DocumentPrototype {
+    private String details;
+
+    public InvoiceType(String details) {
+        this.details = details;
+    }
+
+    @Override
+    public DocumentPrototype clone() {
+        Logger.getInstance().log("Cloning InvoiceType");
+        return new InvoiceType(this.details);
+    }
+
+    @Override
+    public void print() {
+        System.out.println("Invoice Details: " + details);
+    }
+}
+
+// Document class integrating State and Prototype patterns
+class Document {
+    private DocumentState state;
+    private DocumentPrototype prototype;
+
+    public Document(DocumentPrototype prototype) {
+        this.prototype = prototype.clone();
+        this.state = new DraftState();
+    }
+
+    public void changeState(DocumentState newState) {
+        this.state = newState;
+    }
+
+    public void handleInput(String input) {
+        state.handleInput(input);
+    }
+
+    public void print() {
+        prototype.print();
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        ReportType reportPrototype = new ReportType("Annual Financial Summary");
+        InvoiceType invoicePrototype = new InvoiceType("Invoice for Consulting Services");
+
+        Document report = new Document(reportPrototype);
+        report.handleInput("Editing Report");
+        report.changeState(new ReviewState());
+        report.handleInput("Reviewing Report");
+        report.print();
+
+        Document invoice = new Document(invoicePrototype);
+        invoice.handleInput("Editing Invoice");
+        invoice.changeState(new FinalState());
+        invoice.handleInput("Finalizing Invoice");
+        invoice.print();
+    }
+}
