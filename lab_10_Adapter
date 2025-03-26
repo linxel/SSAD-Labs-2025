@@ -1,0 +1,113 @@
+//Adapter Design Pattern Implementation (Payment Gateway)
+interface PaymentProcessor {
+    void processPayment(double amount);
+    void refundPayment(double amount);
+    boolean verifyPayment();
+}
+
+class PayPal {
+    public void sendPayment(double amount) {
+        System.out.println("Processing PayPal payment of $" + amount);
+    }
+
+    public void refundPaymentPayPal(double amount) {
+        System.out.println("Refunding PayPal payment of $" + amount);
+    }
+
+    public boolean checkPaymentStatus() {
+        return true;
+    }
+}
+
+class Stripe {
+    public void makePayment(double amount) {
+        System.out.println("Processing Stripe payment of $" + amount);
+    }
+
+    public void issueRefund(double amount) {
+        System.out.println("Refunding Stripe payment of $" + amount);
+    }
+
+    public boolean verifyTransaction() {
+        return true;
+    }
+}
+
+class PayPalAdapter implements PaymentProcessor {
+    private PayPal payPal;
+
+    public PayPalAdapter(PayPal payPal) {
+        this.payPal = payPal;
+    }
+
+    @Override
+    public void processPayment(double amount) {
+        payPal.sendPayment(amount);
+    }
+
+    @Override
+    public void refundPayment(double amount) {
+        payPal.refundPaymentPayPal(amount);
+    }
+
+    @Override
+    public boolean verifyPayment() {
+        return payPal.checkPaymentStatus();
+    }
+}
+
+class StripeAdapter implements PaymentProcessor {
+    private Stripe stripe;
+
+    public StripeAdapter(Stripe stripe) {
+        this.stripe = stripe;
+    }
+
+    @Override
+    public void processPayment(double amount) {
+        stripe.makePayment(amount);
+    }
+
+    @Override
+    public void refundPayment(double amount) {
+        stripe.issueRefund(amount);
+    }
+
+    @Override
+    public boolean verifyPayment() {
+        return stripe.verifyTransaction();
+    }
+}
+
+class PaymentGateway {
+    private PaymentProcessor paymentProcessor;
+
+    public void setPaymentProcessor(PaymentProcessor paymentProcessor) {
+        this.paymentProcessor = paymentProcessor;
+    }
+
+    public void processPayment(double amount) {
+        paymentProcessor.processPayment(amount);
+    }
+
+    public void refundPayment(double amount) {
+        paymentProcessor.refundPayment(amount);
+    }
+
+    public boolean verifyPayment() {
+        return paymentProcessor.verifyPayment();
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        PaymentGateway gateway = new PaymentGateway();
+
+        // Using PayPal
+        PayPal payPal = new PayPal();
+        PaymentProcessor payPalAdapter = new PayPalAdapter(payPal);
+        gateway.setPaymentProcessor(payPalAdapter);
+
+        gateway.processPayment(100.50);
+        gateway.refundPayment(25.75);
+        System.out.println("Payment verified: " + gateway.verifyPayment());
