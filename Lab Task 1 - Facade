@@ -1,0 +1,57 @@
+class Light {
+    public void on() {
+        System.out.println("Light on.");
+    }
+
+    public void off() {
+        System.out.println("Light off.");
+    }
+}
+
+class Thermostat {
+    public void setTemperature(int temperature) {
+        System.out.println("Thermostat set to " + temperature + " degrees.");
+    }
+}
+
+class SecurityCamera {
+    public void activate() {
+        System.out.println("Security Camera activated.");
+    }
+
+    public void deactivate() {
+        System.out.println("Security Camera deactivated.");
+    }
+}
+
+class SmartHomeFacade {
+    private Light light;
+    private Thermostat thermostat;
+    private SecurityCamera securityCamera;
+
+    public SmartHomeFacade() {
+        this.light = new Light();
+        this.thermostat = new Thermostat();
+        this.securityCamera = new SecurityCamera();
+    }
+
+    public void leavingHome() {
+        light.off();
+        thermostat.setTemperature(18); // Eco mode
+        securityCamera.activate();
+    }
+
+    public void arrivingHome() {
+        light.on();
+        thermostat.setTemperature(22); // Comfortable temperature
+        securityCamera.deactivate();
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        SmartHomeFacade smartHome = new SmartHomeFacade();
+        smartHome.leavingHome();
+        smartHome.arrivingHome();
+    }
+}
