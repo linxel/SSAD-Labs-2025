@@ -1,0 +1,68 @@
+// Text Interface
+interface Text {
+    void write(String message);
+}
+
+// PlainText Class
+class PlainText implements Text {
+    public void write(String message) {
+        System.out.println(message);
+    }
+}
+
+// TextDecorator Abstract Class
+abstract class TextDecorator implements Text {
+    protected Text text;
+
+    public TextDecorator(Text text) {
+        this.text = text;
+    }
+
+    public void write(String message) {
+        text.write(message);
+    }
+}
+
+// Bold Decorator
+class Bold extends TextDecorator {
+    public Bold(Text text) {
+        super(text);
+    }
+
+    public void write(String message) {
+        super.write("\033[1m" + message + "\033[0m");
+    }
+}
+
+// Italic Decorator
+class Italic extends TextDecorator {
+    public Italic(Text text) {
+        super(text);
+    }
+
+    public void write(String message) {
+        super.write("\033[3m" + message + "\033[0m");
+    }
+}
+
+// Underline Decorator
+class Underline extends TextDecorator {
+    public Underline(Text text) {
+        super(text);
+    }
+
+    public void write(String message) {
+        super.write("\033[4m" + message + "\033[0m");
+    }
+}
+
+// Main Function
+public class  Decorator {
+    public static void main(String[] args) {
+        Text text = new PlainText();
+        text = new Bold(text);
+        text = new Italic(text);
+        text = new Underline(text);
+        text.write("Hello, World!");
+    }
+}
