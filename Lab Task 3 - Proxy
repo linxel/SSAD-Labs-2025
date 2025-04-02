@@ -1,0 +1,56 @@
+// Document Interface
+interface Document {
+    void display();
+}
+
+// RealDocument Class
+class RealDocument implements Document {
+    private String content;
+
+    public RealDocument(String content) {
+        this.content = content;
+        loadFromDisk();
+    }
+
+    public void display() {
+        System.out.println("Displaying content: " + content);
+    }
+
+    private void loadFromDisk() {
+        System.out.println("Loading document from disk.");
+    }
+}
+
+// SecureDocumentProxy Class
+class SecureDocumentProxy implements Document {
+    private RealDocument realDocument;
+    private String content;
+    private String userRole;
+
+    public SecureDocumentProxy(String content, String userRole) {
+        this.content = content;
+        this.userRole = userRole;
+    }
+
+    public void display() {
+        if (userRole.equals("admin")) {
+            if (realDocument == null) {
+                realDocument = new RealDocument(content);
+            }
+            realDocument.display();
+        } else {
+            System.out.println("Access denied.");
+        }
+    }
+}
+
+// Main Function
+public class Proxy {
+    public static void main(String[] args) {
+        Document doc = new SecureDocumentProxy("Secret Document", "user");
+        doc.display(); // Access denied
+
+        doc = new SecureDocumentProxy("Secret Document", "admin");
+        doc.display(); // Displaying content
+    }
+}
