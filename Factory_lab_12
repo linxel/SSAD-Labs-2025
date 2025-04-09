@@ -1,0 +1,67 @@
+interface ITransport {
+    void delivery();
+}
+
+class Truck implements ITransport {
+    private String address;
+
+    public Truck(String address) {
+        this.address = address;
+    }
+
+    @Override
+    public void delivery() {
+        System.out.println("Delivering by truck to address: " + address);
+    }
+}
+
+class Ship implements ITransport {
+    private String country;
+
+    public Ship(String country) {
+        this.country = country;
+    }
+
+    @Override
+    public void delivery() {
+        System.out.println("Delivering by ship to country: " + country);
+    }
+}
+
+class Plane implements ITransport {
+    private String country;
+
+    public Plane(String country) {
+        this.country = country;
+    }
+
+    @Override
+    public void delivery() {
+        System.out.println("Delivering by plane to country: " + country);
+    }
+}
+
+class TransportFactory {
+    public static ITransport getTransport(String type, String destination) {
+        if (type.equalsIgnoreCase("truck")) {
+            return new Truck(destination);
+        } else if (type.equalsIgnoreCase("ship")) {
+            return new Ship(destination);
+        } else if (type.equalsIgnoreCase("plane")) {
+            return new Plane(destination);
+        }
+        throw new IllegalArgumentException("Unknown transport type: " + type);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        ITransport truck = TransportFactory.getTransport("truck", "123 Main St");
+        ITransport ship = TransportFactory.getTransport("ship", "USA");
+        ITransport plane = TransportFactory.getTransport("plane", "UK");
+
+        truck.delivery();
+        ship.delivery();
+        plane.delivery();
+    }
+}
