@@ -1,0 +1,90 @@
+import java.util.HashMap;
+import java.util.Map;
+
+class FormatType {
+    private String font;
+    private int size;
+    private String color;
+
+    public FormatType(String font, int size, String color) {
+        this.font = font;
+        this.size = size;
+        this.color = color;
+    }
+
+    public String getFont() {
+        return font;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    @Override
+    public String toString() {
+        return "Font: " + font + ", Size: " + size + ", Color: " + color;
+    }
+}
+
+class FormatFactory {
+    private static Map<String, FormatType> formatTypes = new HashMap<>();
+
+    public static FormatType getFormatType(String font, int size, String color) {
+        String key = font + size + color;
+        if (!formatTypes.containsKey(key)) {
+            formatTypes.put(key, new FormatType(font, size, color));
+        }
+        return formatTypes.get(key);
+    }
+
+    public static int getTotalFormatTypes() {
+        return formatTypes.size();
+    }
+}
+
+class FormattedCharacter {
+    private char character;
+    private FormatType formatType;
+
+    public FormattedCharacter(char character, FormatType formatType) {
+        this.character = character;
+        this.formatType = formatType;
+    }
+
+    public void print() {
+        System.out.println("Character: " + character + " with properties: " + formatType);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        FormattedCharacter[] document = {
+                new FormattedCharacter('H', FormatFactory.getFormatType("Arial", 12, "Red")),
+                new FormattedCharacter('e', FormatFactory.getFormatType("Arial", 12, "Red")),
+                new FormattedCharacter('l', FormatFactory.getFormatType("Arial", 12, "Red")),
+                new FormattedCharacter('l', FormatFactory.getFormatType("Arial", 12, "Red")),
+                new FormattedCharacter('o', FormatFactory.getFormatType("Arial", 12, "Red")),
+                new FormattedCharacter(' ', FormatFactory.getFormatType("Times New Roman", 12, "Black")),
+                new FormattedCharacter('W', FormatFactory.getFormatType("Arial", 14, "Blue")),
+                new FormattedCharacter('o', FormatFactory.getFormatType("Arial", 14, "Blue")),
+                new FormattedCharacter('r', FormatFactory.getFormatType("Arial", 14, "Blue")),
+                new FormattedCharacter('l', FormatFactory.getFormatType("Arial", 14, "Blue")),
+                new FormattedCharacter('d', FormatFactory.getFormatType("Arial", 14, "Blue")),
+                new FormattedCharacter('!', FormatFactory.getFormatType("Arial", 16, "Green"))
+        };
+
+        System.out.println("Document content:");
+        for (FormattedCharacter fc : document) {
+            fc.print();
+        }
+
+        System.out.println("\nMemory Usage Analysis:");
+        System.out.println("Total characters: " + document.length);
+        System.out.println("Total format types: " + FormatFactory.getTotalFormatTypes());
+        System.out.println("Flyweight pattern reduced memory usage by sharing format types!");
+    }
+}
