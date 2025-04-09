@@ -1,0 +1,86 @@
+abstract class MusicPlayer {
+    protected AudioCodec codec;
+
+    public MusicPlayer(AudioCodec codec) {
+        this.codec = codec;
+    }
+
+    public abstract void play(String fileName);
+}
+
+interface AudioCodec {
+    void decode(String fileName);
+}
+
+class MP3Codec implements AudioCodec {
+    @Override
+    public void decode(String fileName) {
+        System.out.println("Decoding " + fileName + " using MP3 codec");
+    }
+}
+
+class WAVCodec implements AudioCodec {
+    @Override
+    public void decode(String fileName) {
+        System.out.println("Decoding " + fileName + " using WAV codec");
+    }
+}
+
+class FLACCodec implements AudioCodec {
+    @Override
+    public void decode(String fileName) {
+        System.out.println("Decoding " + fileName + " using FLAC codec");
+    }
+}
+
+class PopMusicPlayer extends MusicPlayer {
+    public PopMusicPlayer(AudioCodec codec) {
+        super(codec);
+    }
+
+    @Override
+    public void play(String fileName) {
+        System.out.println("Playing pop music...");
+        codec.decode(fileName);
+    }
+}
+
+class JazzMusicPlayer extends MusicPlayer {
+    public JazzMusicPlayer(AudioCodec codec) {
+        super(codec);
+    }
+
+    @Override
+    public void play(String fileName) {
+        System.out.println("Playing jazz music...");
+        codec.decode(fileName);
+    }
+}
+
+class RockMusicPlayer extends MusicPlayer {
+    public RockMusicPlayer(AudioCodec codec) {
+        super(codec);
+    }
+
+    @Override
+    public void play(String fileName) {
+        System.out.println("Playing rock music...");
+        codec.decode(fileName);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        AudioCodec mp3 = new MP3Codec();
+        AudioCodec wav = new WAVCodec();
+        AudioCodec flac = new FLACCodec();
+
+        MusicPlayer popPlayer = new PopMusicPlayer(mp3);
+        MusicPlayer jazzPlayer = new JazzMusicPlayer(wav);
+        MusicPlayer rockPlayer = new RockMusicPlayer(flac);
+
+        popPlayer.play("pop_song.mp3");
+        jazzPlayer.play("jazz_song.wav");
+        rockPlayer.play("rock_song.flac");
+    }
+}
