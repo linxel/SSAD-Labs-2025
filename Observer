@@ -1,0 +1,127 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <map>
+#include <memory>
+#include <algorithm>
+
+using namespace std;
+
+class Observer
+{
+public:
+	string path;
+	Observer(const string &path)
+		: path(path)
+	{}
+};
+
+class EventListener
+{
+public:
+	virtual ~EventListener() = default;
+	virtual void update(const string &eventType, const Observer &file) = 0;
+};
+
+class EventManager
+{
+private:
+	map<string, vector<shared_ptr<EventListener>>> listeners;
+
+public:
+	EventManager(const vector<string> &operations)
+	{
+		for (const auto &op: operations) {
+			listeners[op] = vector<shared_ptr<EventListener>>();
+		}
+	}
+
+	void subscribe(const string &eventType, shared_ptr<EventListener> listener)
+	{
+		if (listeners.find(eventType) != listeners.end()) {
+			listeners[eventType].push_back(listener);
+		}
+	}
+
+	void unsubscribe(const string &eventType, shared_ptr<EventListener> listener)
+	{
+		if (listeners.find(eventType) != listeners.end()) {
+			auto &vec = listeners[eventType];
+			vec.erase(remove(vec.begin(), vec.end(), listener), vec.end());
+		}
+	}
+
+	void notify(const string &eventType, const Observer &file)
+	{
+		if (listeners.find(eventType) != listeners.end()) {
+			for (const auto &listener: listeners[eventType]) {
+				listener->update(eventType, file);
+			}
+		}
+	}
+};
+
+class Editor
+{
+public:
+	unique_ptr<EventManager> events;
+	unique_ptr<Observer> file;
+
+	Editor()
+	{
+		events = make_unique<EventManager>(vector<string>{"open", "save"});
+	}
+
+	void openFile(const string &filePath)
+	{
+		file = make_unique<Observer>(filePath);
+		events->notify("open", *file);
+	}
+
+	void saveFile()
+	{
+		if (!file) {
+			cerr << "No file is open!" << endl;
+			return;
+		}
+		cout << "File saved: " << file->path << endl;
+		events->notify("save", *file);
+	}
+};
+
+class LoggingListener: public EventListener
+{
+public:
+	void update(const string &eventType, const Observer &file) override
+	{
+		cout << "LoggingListener: " << eventType << " event on file: " << file.path << endl;
+	}
+};
+
+class EmailNotificationListener: public EventListener
+{
+public:
+	void update(const string &eventType, const Observer &file) override
+	{
+		if (eventType == "save") {
+			cout << "EmailNotificationListener: Sending email notification for file: " << file.path << endl;
+		}
+	}
+};
+
+int main()
+{
+	Editor editor;
+
+	auto loggingListener = make_shared<LoggingListener>();
+	auto emailListener = make_shared<EmailNotificationListener>();
+
+	editor.events->subscribe("open", loggingListener);
+	editor.events->subscribe("save", loggingListener);
+	editor.events->subscribe("save", emailListener);
+
+	editor.openFile("example.txt");
+	editor.saveFile();
+
+	return 0;
+}
